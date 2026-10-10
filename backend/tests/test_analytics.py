@@ -263,8 +263,8 @@ def test_summary_figures(client: TestClient, user: User, summary_data: dict[str,
     assert resp.status_code == 200, resp.text
     body = resp.json()
     # 433.3333.. (weekly 100 x 52/12) + 164.99 + 100 + 100 + 25 + 21.68833.. (10.01 x 52/24)
-    # = 845.0216.. -> 845.02 (per-plan rounding would give 845.01).
-    assert body["mrr"] == "845.02"
+    # = 845.0116.. -> 845.01.
+    assert body["mrr"] == "845.01"
     assert body["currency"] == "USD"
     assert body["collectedThisMonth"] == "37.50"
     assert body["outstanding"] == "1362.00"

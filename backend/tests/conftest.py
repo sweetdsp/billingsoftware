@@ -149,3 +149,13 @@ def sent_emails(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, Any]]:
 
     monkeypatch.setattr("app.services.email_service._deliver", _fake_deliver, raising=False)
     return captured
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _build_routes() -> None:
+    """Resolve every route's parameters once, before any test freezes time.
+
+    FastAPI builds route dependants lazily; if that first happens inside a ``freeze_time``
+    block, ``datetime.date`` annotations resolve to freezegun's ``FakeDate`` and fail.
+    """
+    app.openapi()
