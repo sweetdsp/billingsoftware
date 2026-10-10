@@ -30,6 +30,7 @@ import PlanEditPage from './pages/plans/PlanEditPage';
 import BillsPage from './pages/bills/BillsPage';
 import BillCreatePage from './pages/bills/BillCreatePage';
 import BillDetailPage from './pages/bills/BillDetailPage';
+import BillEditPage from './pages/bills/BillEditPage';
 import PublicBillPage from './pages/public/PublicBillPage';
 // Payments
 import PaymentsPage from './pages/payments/PaymentsPage';
@@ -82,6 +83,7 @@ export default function App() {
           <Route path="/bills" element={<BillsPage />} />
           <Route path="/bills/new" element={<BillCreatePage />} />
           <Route path="/bills/:id" element={<BillDetailPage />} />
+          <Route path="/bills/:id/edit" element={<BillEditPage />} />
 
           <Route path="/payments" element={<PaymentsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
