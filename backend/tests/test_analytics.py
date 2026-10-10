@@ -102,7 +102,9 @@ def _plan(
         status=status,
     )
     p.line_items = [
-        PlanLineItem(description=f"item {i}", quantity=Decimal(q), unit_price=Decimal(up), position=i)
+        PlanLineItem(
+            description=f"item {i}", quantity=Decimal(q), unit_price=Decimal(up), position=i
+        )
         for i, (q, up) in enumerate(items)
     ]
     db.add(p)
@@ -255,9 +257,7 @@ def summary_data(db: Session, user: User, other_user: User) -> dict[str, Any]:
     return {"p1": p1, "p2": p2, "p5": p5, "eur": eur, "alpha": alpha, "beta": beta}
 
 
-def test_summary_figures(
-    client: TestClient, user: User, summary_data: dict[str, Any]
-) -> None:
+def test_summary_figures(client: TestClient, user: User, summary_data: dict[str, Any]) -> None:
     with freeze_time(FROZEN_NOW):
         resp = client.get(f"{API}/summary", headers=_headers(user))
     assert resp.status_code == 200, resp.text
@@ -299,7 +299,9 @@ def test_summary_figures(
 def test_summary_upcoming_limited_to_ten(client: TestClient, db: Session, user: User) -> None:
     c = _customer(db, user, "Many")
     for i in range(12):
-        _plan(db, user, c, BillingFrequency.MONTHLY, [("1", "1")], next_date=TODAY + timedelta(i % 8))
+        _plan(
+            db, user, c, BillingFrequency.MONTHLY, [("1", "1")], next_date=TODAY + timedelta(i % 8)
+        )
     db.commit()
     with freeze_time(FROZEN_NOW):
         body = client.get(f"{API}/summary", headers=_headers(user)).json()

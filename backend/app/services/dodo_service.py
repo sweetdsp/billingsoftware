@@ -72,7 +72,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from sqlalchemy.orm import Session
 from standardwebhooks import Webhook
@@ -109,7 +109,9 @@ ZERO_DECIMAL_CURRENCIES: frozenset[str] = frozenset(
         "XPF",
     }
 )
-THREE_DECIMAL_CURRENCIES: frozenset[str] = frozenset({"BHD", "IQD", "JOD", "KWD", "LYD", "OMR", "TND"})
+THREE_DECIMAL_CURRENCIES: frozenset[str] = frozenset(
+    {"BHD", "IQD", "JOD", "KWD", "LYD", "OMR", "TND"}
+)
 
 EVENT_PAYMENT_SUCCEEDED = "payment.succeeded"
 EVENT_PAYMENT_FAILED = "payment.failed"
@@ -117,7 +119,7 @@ EVENT_PAYMENT_CANCELLED = "payment.cancelled"
 EVENT_REFUND_SUCCEEDED = "refund.succeeded"
 
 NON_PAYABLE_STATUSES: tuple[BillStatus, ...] = (BillStatus.PAID, BillStatus.CANCELLED)
-TAX_CATEGORY = "saas"
+TAX_CATEGORY: Literal["saas"] = "saas"
 _TWO_PLACES = Decimal("0.01")
 
 

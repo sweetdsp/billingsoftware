@@ -177,9 +177,7 @@ def list_payments(
         filters.append(Payment.paid_at < end)
 
     total = db.scalar(
-        select(func.count(Payment.id))
-        .join(Bill, Bill.id == Payment.bill_id)
-        .where(*filters)
+        select(func.count(Payment.id)).join(Bill, Bill.id == Payment.bill_id).where(*filters)
     )
     rows = db.execute(
         select(
@@ -276,9 +274,7 @@ def delete_manual_payment(db: Session, user: User, payment_id: int) -> None:
         NotFoundError(payment_not_found): no such payment for this user.
         ConflictError(payment_not_deletable): the payment came from Dodo.
     """
-    payment = db.scalar(
-        select(Payment).where(Payment.id == payment_id, Payment.user_id == user.id)
-    )
+    payment = db.scalar(select(Payment).where(Payment.id == payment_id, Payment.user_id == user.id))
     if payment is None:
         raise NotFoundError("Payment not found", code="payment_not_found")
     if payment.provider != PaymentProvider.MANUAL:
@@ -349,8 +345,7 @@ def _resolve_amount(event: DodoEvent, bill: Bill) -> tuple[Decimal, str] | None:
         and event.expected_amount > 0
     ):
         logger.warning(
-            "Dodo payment %s charged in %s for bill_id=%s (%s); recording the requested "
-            "%s %s",
+            "Dodo payment %s charged in %s for bill_id=%s (%s); recording the requested %s %s",
             event.payment_id,
             event.currency,
             bill.id,
@@ -370,7 +365,9 @@ def _resolve_amount(event: DodoEvent, bill: Bill) -> tuple[Decimal, str] | None:
     return event.amount, event.currency
 
 
-def _apply_payment_succeeded(db: Session, event: DodoEvent) -> tuple[WebhookResult, Payment | None, Bill | None]:
+def _apply_payment_succeeded(
+    db: Session, event: DodoEvent
+) -> tuple[WebhookResult, Payment | None, Bill | None]:
     if not event.payment_id:
         logger.warning("Dodo event %s has no payment_id; ignored", event.event_id)
         return "ignored", None, None
@@ -480,7 +477,12 @@ def _apply_refund(db: Session, event: DodoEvent) -> WebhookResult:
         return "unmatched"
     db.refresh(payment)
     if payment.status != PaymentStatus.SUCCEEDED:
-        logger.info("Dodo refund %s: payment %s is %s; skipped", event.refund_id, payment.id, payment.status.value)
+        logger.info(
+            "Dodo refund %s: payment %s is %s; skipped",
+            event.refund_id,
+            payment.id,
+            payment.status.value,
+        )
         return "processed"
     marker = f"Refund {event.refund_id}" if event.refund_id else None
     if marker and payment.notes and marker in payment.notes:
@@ -518,9 +520,7 @@ def _apply_refund(db: Session, event: DodoEvent) -> WebhookResult:
     return "processed"
 
 
-def handle_dodo_event(
-    db: Session, event: DodoEvent, raw_payload: dict[str, Any]
-) -> WebhookResult:
+def handle_dodo_event(db: Session, event: DodoEvent, raw_payload: dict[str, Any]) -> WebhookResult:
     """Process one verified Dodo webhook exactly once and commit.
 
     Returns ``duplicate`` for a replayed ``event_id``; ``unmatched`` when no bill/payment

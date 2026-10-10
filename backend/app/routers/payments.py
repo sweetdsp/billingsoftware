@@ -41,9 +41,7 @@ def list_payments(
         date_from=date_from,
         date_to=date_to,
     )
-    return Page[PaymentOut](
-        items=items, total=total, page=params.page, page_size=params.page_size
-    )
+    return Page[PaymentOut](items=items, total=total, page=params.page, page_size=params.page_size)
 
 
 @router.delete("/{payment_id}", status_code=status.HTTP_204_NO_CONTENT, response_class=Response)

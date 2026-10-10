@@ -60,9 +60,7 @@ def get_bill(bill_id: int, db: DbSession, user: CurrentUser) -> BillDetail:
 
 
 @router.put("/{bill_id}", response_model=BillOut)
-def update_bill(
-    bill_id: int, payload: BillUpdate, db: DbSession, user: CurrentUser
-) -> BillOut:
+def update_bill(bill_id: int, payload: BillUpdate, db: DbSession, user: CurrentUser) -> BillOut:
     """Edit a draft bill (409 ``bill_not_draft`` otherwise)."""
     return bill_service.to_out(bill_service.update_bill(db, user, bill_id, payload))
 
@@ -110,9 +108,7 @@ def download_pdf(bill_id: int, db: DbSession, user: CurrentUser) -> Response:
     )
 
 
-@router.post(
-    "/{bill_id}/payments", response_model=PaymentOut, status_code=status.HTTP_201_CREATED
-)
+@router.post("/{bill_id}/payments", response_model=PaymentOut, status_code=status.HTTP_201_CREATED)
 def record_payment(
     bill_id: int, payload: ManualPaymentCreate, db: DbSession, user: CurrentUser
 ) -> PaymentOut:

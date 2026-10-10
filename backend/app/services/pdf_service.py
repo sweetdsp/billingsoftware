@@ -175,7 +175,7 @@ def _html_to_pdf(html: str, base_url: str | None) -> bytes:
     from weasyprint import HTML
     from weasyprint.urls import URLFetcher
 
-    class DataOnlyURLFetcher(URLFetcher):  # type: ignore[misc]
+    class DataOnlyURLFetcher(URLFetcher):
         """WeasyPrint fetcher restricted to ``data:`` URIs (no network, no files)."""
 
         def fetch(self, url: str, headers: dict[str, str] | None = None) -> Any:
@@ -235,9 +235,7 @@ def delete_blob(key: str | None) -> None:
         logger.exception("Failed to delete stale PDF blob %s", key)
 
 
-def store_bill_pdf(
-    db: Session, bill: Bill, profile: BusinessProfile
-) -> tuple[bytes, str | None]:
+def store_bill_pdf(db: Session, bill: Bill, profile: BusinessProfile) -> tuple[bytes, str | None]:
     """Render the bill PDF, store it (replacing any previous one) and set ``pdf_file_id``.
 
     Only flushes; the caller commits and then calls :func:`delete_blob` on the returned
