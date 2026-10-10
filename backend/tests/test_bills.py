@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.enums import BillStatus
+from app.exceptions import NotFoundError
 from app.models import User
 from tests.helpers import make_bill, make_customer, make_profile
 
@@ -305,6 +306,30 @@ def test_pdf_rendered_on_demand(
     assert bill.pdf_file_id is not None
     # Second call reads the stored blob instead of re-rendering.
     assert client.get(f"{URL}/{bill.id}/pdf", headers=auth_headers).content == b"%PDF-test"
+
+
+def test_pdf_is_rebuilt_when_the_stored_file_is_missing(
+    client: TestClient,
+    db: Session,
+    user: User,
+    auth_headers: dict[str, str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    make_profile(db, user)
+    bill = make_bill(db, user, make_customer(db, user))
+    assert client.get(f"{URL}/{bill.id}/pdf", headers=auth_headers).status_code == 200
+    db.refresh(bill)
+    first_file_id = bill.pdf_file_id
+
+    def _gone(record: object) -> bytes:
+        raise NotFoundError("File not found", code="file_not_found")
+
+    monkeypatch.setattr("app.services.upload_service.read_upload_bytes", _gone)
+    resp = client.get(f"{URL}/{bill.id}/pdf", headers=auth_headers)
+    assert resp.status_code == 200
+    assert resp.content == b"%PDF-test"
+    db.refresh(bill)
+    assert bill.pdf_file_id is not None and bill.pdf_file_id != first_file_id
 
 
 # --------------------------------------------------------------------------- public

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from datetime import date
 from typing import Annotated
 
@@ -10,11 +11,14 @@ from sqlalchemy.orm import Session
 
 from app.dependencies import get_current_user, get_db
 from app.enums import BillStatus
+from app.exceptions import NotFoundError
 from app.models import User
 from app.schemas.base import Page, PageParams
 from app.schemas.bill import BillCreate, BillDetail, BillListItem, BillOut, BillUpdate
 from app.schemas.payment import ManualPaymentCreate, PaymentOut
 from app.services import bill_sender, bill_service, payment_service, upload_service
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/bills", tags=["bills"])
 
@@ -95,12 +99,18 @@ def download_pdf(bill_id: int, db: DbSession, user: CurrentUser) -> Response:
     from app.services import pdf_service
 
     bill = bill_service.get_owned_bill(db, user, bill_id)
+    data: bytes | None = None
     if bill.pdf_file is not None:
-        data = upload_service.read_upload_bytes(bill.pdf_file)
-    else:
+        try:
+            data = upload_service.read_upload_bytes(bill.pdf_file)
+        except NotFoundError:
+            # e.g. ephemeral disk was reset on a redeploy: the PDF is cheap to rebuild.
+            logger.warning("Stored PDF for bill %s is missing; re-rendering", bill.id)
+    if data is None:
         profile = bill_service.get_profile(db, user)
-        data, _ = pdf_service.store_bill_pdf(db, bill, profile)
+        data, stale_key = pdf_service.store_bill_pdf(db, bill, profile)
         db.commit()
+        pdf_service.delete_blob(stale_key)
     return Response(
         content=data,
         media_type="application/pdf",
