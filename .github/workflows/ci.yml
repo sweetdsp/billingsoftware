@@ -119,8 +119,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create .env from example
-        run: cp .env.example .env
+      - name: Create CI-only .env
+        # Throwaway dummy values so compose can resolve variables; no real secrets in CI.
+        run: |
+          cat > .env <<'EOF'
+          ENVIRONMENT=test
+          APP_BASE_URL=http://localhost:5173
+          CORS_ORIGINS=http://localhost:5173
+          POSTGRES_USER=bill_maker
+          POSTGRES_PASSWORD=ci-test-password
+          POSTGRES_DB=bill_maker
+          SECRET_KEY=ci-only-secret-key-not-used-anywhere-else-0123456789
+          SCHEDULER_ENABLED=false
+          STORAGE_BACKEND=local
+          DODO_PAYMENTS_ENVIRONMENT=test_mode
+          VITE_API_URL=http://localhost:8000
+          EOF
 
       - name: Validate compose files
         run: |
