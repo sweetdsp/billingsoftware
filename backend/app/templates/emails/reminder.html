@@ -1,0 +1,33 @@
+{#
+  Payment reminder for an unpaid / overdue bill.
+  Context (required):
+    {{ business_name }}  (str)
+    {{ customer_name }}  (str)
+    {{ bill_number }}    (str)
+    {{ total }}          (str)   amount still due, money string
+    {{ currency }}       (str)
+    {{ due_date }}       (str)
+    {{ pay_url }}        (str)
+  Context (optional):
+    {{ days_overdue }}   (int | None)
+#}
+{% extends "_base.html" %}
+{% block subject %}Reminder: bill {{ bill_number }} from {{ business_name }}{% endblock %}
+{% block brand %}{{ business_name }}{% endblock %}
+{% block content %}
+<h1>Payment reminder</h1>
+<p>Hi {{ customer_name }},</p>
+{% if days_overdue is defined and days_overdue %}
+<p>This is a friendly reminder that bill {{ bill_number }} from {{ business_name }} is {{ days_overdue }} day(s) overdue.</p>
+{% else %}
+<p>This is a friendly reminder that bill {{ bill_number }} from {{ business_name }} is due on {{ due_date }}.</p>
+{% endif %}
+<table class="summary" role="presentation">
+  <tr><td>Bill number</td><td class="value">{{ bill_number }}</td></tr>
+  <tr><td>Amount due</td><td class="value">{{ total }} {{ currency }}</td></tr>
+  <tr><td>Due date</td><td class="value">{{ due_date }}</td></tr>
+</table>
+<p><a class="button" href="{{ pay_url }}">Pay now</a></p>
+<p class="muted">If you have already paid, please ignore this email.</p>
+{% endblock %}
+{% block footer %}Sent on behalf of {{ business_name }} by {{ app_name }}.{% endblock %}

@@ -1,0 +1,35 @@
+{#
+  Payment receipt.
+  Context (required):
+    {{ business_name }}  (str)
+    {{ customer_name }}  (str)
+    {{ bill_number }}    (str)
+    {{ amount_paid }}    (str)   money string of this payment
+    {{ currency }}       (str)
+    {{ total }}          (str)   bill total, money string
+    {{ pay_url }}        (str)   public bill page
+  Context (optional):
+    {{ balance_due }}    (str | None)  remaining balance if partially paid
+    {{ paid_at }}        (str | None)
+    {{ due_date }}       (str | None)
+#}
+{% extends "_base.html" %}
+{% block subject %}Receipt for bill {{ bill_number }} from {{ business_name }}{% endblock %}
+{% block brand %}{{ business_name }}{% endblock %}
+{% block content %}
+<h1>Thank you for your payment</h1>
+<p>Hi {{ customer_name }},</p>
+<p>{{ business_name }} has received your payment for bill {{ bill_number }}.</p>
+<table class="summary" role="presentation">
+  <tr><td>Amount paid</td><td class="value">{{ amount_paid }} {{ currency }}</td></tr>
+  <tr><td>Bill total</td><td class="value">{{ total }} {{ currency }}</td></tr>
+{% if paid_at is defined and paid_at %}
+  <tr><td>Paid on</td><td class="value">{{ paid_at }}</td></tr>
+{% endif %}
+{% if balance_due is defined and balance_due %}
+  <tr><td>Balance due</td><td class="value">{{ balance_due }} {{ currency }}</td></tr>
+{% endif %}
+</table>
+<p><a class="button" href="{{ pay_url }}">View bill</a></p>
+{% endblock %}
+{% block footer %}Sent on behalf of {{ business_name }} by {{ app_name }}.{% endblock %}

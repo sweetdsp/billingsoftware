@@ -1,0 +1,14 @@
+{#
+  Email-address verification.
+  Context: {{ full_name }} (str | None), {{ verify_url }} (str), {{ expires_hours }} (int)
+#}
+{% extends "_base.html" %}
+{% block subject %}Verify your email for {{ app_name }}{% endblock %}
+{% block content %}
+<h1>Confirm your email address</h1>
+<p>Hi{% if full_name %} {{ full_name }}{% endif %},</p>
+<p>Thanks for signing up for {{ app_name }}. Please confirm your email address so we can keep your account secure.</p>
+<p><a class="button" href="{{ verify_url }}">Verify email</a></p>
+<p class="muted">This link expires in {{ expires_hours }} hours. If the button does not work, paste this link into your browser:<br><span class="link">{{ verify_url }}</span></p>
+<p class="muted">If you did not create an account, you can ignore this email.</p>
+{% endblock %}

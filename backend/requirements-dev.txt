@@ -1,0 +1,17 @@
+-r requirements.txt
+
+# Lint / type-check
+ruff>=0.6.0
+mypy>=1.11.0
+types-python-dateutil>=2.9.0
+types-python-jose>=3.3.4
+boto3-stubs[s3]>=1.35.0
+
+# Tests
+pytest>=8.3.0
+pytest-cov>=5.0.0
+freezegun>=1.5.0
+
+# Pure-Python Postgres driver for local dev on machines where Windows Smart App
+# Control blocks psycopg2's bundled libpq DLL. Use DATABASE_URL=postgresql+pg8000://...
+pg8000>=1.31

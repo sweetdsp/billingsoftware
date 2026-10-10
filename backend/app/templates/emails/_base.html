@@ -1,0 +1,41 @@
+{#
+  Shared layout for every transactional email.
+  Child templates define:
+    {% block subject %}  plain-text subject line (also used as <title>)
+    {% block content %}  the HTML body
+  Optional overrides: {% block brand %}, {% block footer %}.
+  Always available: {{ app_name }}, {{ app_base_url }}.
+  Autoescape is ON: never mark user-supplied values |safe.
+#}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block subject %}{{ app_name }}{% endblock %}</title>
+<style>
+  body { margin: 0; padding: 0; background: #f4f5f7; font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #1f2933; }
+  .wrapper { width: 100%; padding: 24px 0; }
+  .card { max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 32px; }
+  .brand { font-size: 20px; font-weight: 700; color: #4f46e5; margin-bottom: 24px; }
+  h1 { font-size: 22px; margin: 0 0 16px; }
+  p { font-size: 15px; line-height: 1.6; margin: 0 0 16px; }
+  .button { display: inline-block; background: #4f46e5; color: #ffffff !important; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; }
+  .muted { color: #6b7280; font-size: 13px; }
+  .summary { width: 100%; border-collapse: collapse; margin: 0 0 16px; }
+  .summary td { padding: 6px 0; font-size: 15px; border-bottom: 1px solid #e5e7eb; }
+  .summary td.value { text-align: right; font-weight: 600; }
+  .link { word-break: break-all; }
+  .footer { max-width: 560px; margin: 16px auto 0; text-align: center; color: #9ca3af; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="card">
+    <div class="brand">{% block brand %}{{ app_name }}{% endblock %}</div>
+    {% block content %}{% endblock %}
+  </div>
+  <div class="footer">{% block footer %}Sent by {{ app_name }}.{% endblock %}</div>
+</div>
+</body>
+</html>

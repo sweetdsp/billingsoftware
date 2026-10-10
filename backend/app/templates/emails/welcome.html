@@ -1,0 +1,13 @@
+{#
+  Welcome (after email verification, or first Google sign-in).
+  Context: {{ full_name }} (str | None), {{ dashboard_url }} (str)
+#}
+{% extends "_base.html" %}
+{% block subject %}Welcome to {{ app_name }}{% endblock %}
+{% block content %}
+<h1>Welcome aboard!</h1>
+<p>Hi{% if full_name %} {{ full_name }}{% endif %},</p>
+<p>Your {{ app_name }} account is ready. Here is how to put your billing on autopilot:</p>
+<p>1. Set up your business profile and logo.<br>2. Add your customers.<br>3. Create a billing plan and let {{ app_name }} send bills for you.</p>
+<p><a class="button" href="{{ dashboard_url }}">Go to your dashboard</a></p>
+{% endblock %}

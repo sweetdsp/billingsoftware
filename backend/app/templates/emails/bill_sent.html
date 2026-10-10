@@ -1,0 +1,31 @@
+{#
+  New bill sent to a customer.
+  Context (required):
+    {{ business_name }}  (str)   sender business
+    {{ customer_name }}  (str)
+    {{ bill_number }}    (str)   e.g. "BM-0001"
+    {{ total }}          (str)   money string, e.g. "1250.00"
+    {{ currency }}       (str)   ISO 4217, e.g. "USD"
+    {{ due_date }}       (str)   e.g. "2026-10-17"
+    {{ pay_url }}        (str)   public bill / payment page
+  Context (optional):
+    {{ footer_note }}    (str | None)
+#}
+{% extends "_base.html" %}
+{% block subject %}Bill {{ bill_number }} from {{ business_name }}{% endblock %}
+{% block brand %}{{ business_name }}{% endblock %}
+{% block content %}
+<h1>New bill {{ bill_number }}</h1>
+<p>Hi {{ customer_name }},</p>
+<p>{{ business_name }} has sent you a new bill.</p>
+<table class="summary" role="presentation">
+  <tr><td>Bill number</td><td class="value">{{ bill_number }}</td></tr>
+  <tr><td>Amount due</td><td class="value">{{ total }} {{ currency }}</td></tr>
+  <tr><td>Due date</td><td class="value">{{ due_date }}</td></tr>
+</table>
+<p><a class="button" href="{{ pay_url }}">View &amp; pay bill</a></p>
+{% if footer_note is defined and footer_note %}
+<p class="muted">{{ footer_note }}</p>
+{% endif %}
+{% endblock %}
+{% block footer %}Sent on behalf of {{ business_name }} by {{ app_name }}.{% endblock %}
