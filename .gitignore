@@ -29,7 +29,6 @@ pnpm-debug.log*
 # --- Environment ---
 .env
 .env.*
-!.env.example
 
 # --- Uploads ---
 uploads/

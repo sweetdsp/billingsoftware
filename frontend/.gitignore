@@ -16,7 +16,6 @@ coverage
 # Env
 .env
 .env.*
-!.env.example
 
 # Editor
 .vscode/*
