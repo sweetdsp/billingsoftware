@@ -8,7 +8,7 @@ help:
 	@echo "Targets: env dev up down logs build migrate test lint"
 
 env:
-	@test -f .env || cp .env.example .env
+	@test -f .env || { echo "Missing .env - create it (variables are listed in CLAUDE.md, 'Environment Variables')"; exit 1; }
 
 dev: env
 	$(COMPOSE_DEV) up --build

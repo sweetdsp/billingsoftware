@@ -1,5 +1,5 @@
 # Bill Maker - production-like local stack
-#   cp .env.example .env   (then edit secrets)
+#   create .env first (variables: see CLAUDE.md, 'Environment Variables'; never commit it)
 #   docker compose up --build
 # Ports: frontend http://localhost:3000, backend http://localhost:8000, postgres localhost:5432
 
